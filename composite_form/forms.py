@@ -2,6 +2,14 @@ from django import forms
 
 
 class CompositeForm(forms.Form):
+    """
+    Helper class to handle form composition.
+
+    Usage::
+
+      class ProfileForm(CompositeForm):
+          form_list = [ProfileAddressForm, ProfileBirthDayForm]
+    """
     form_list = None
     _form_instances = {}
 
@@ -12,10 +20,18 @@ class CompositeForm(forms.Form):
 
     @property
     def forms(self):
+        """
+        Returns list of form instances
+        """
         # Preserving forms ordering
         return [self._form_instances[form_class] for form_class in self.form_list]
 
     def get_form(self, form_class):
+        """
+        Returns form instance by its class
+
+        ``form_class``: form class from ``forms_list``
+        """
         return self._form_instances[form_class]
 
     def full_clean(self):
@@ -36,6 +52,9 @@ class CompositeForm(forms.Form):
 
     @property
     def errors(self):
+        """
+        Returns error dictionary containing all errors from all forms
+        """
         _errors = {}
         for form in self.forms:
             _errors.update(form.errors)
