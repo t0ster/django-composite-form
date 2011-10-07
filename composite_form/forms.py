@@ -10,16 +10,40 @@ class CompositeForm(forms.Form):
         for form in self.form_list:
             self._form_instances[form] = form(data, files, *args, **kwargs)
 
-    def full_clean(self):
-        for form in self._form_instances.values():
-            form.full_clean()
+    @property
+    def forms(self):
+        # Preserving forms ordering
+        return [self._form_instances[form_class] for form_class in self.form_list]
 
-    def get_form_instance(self, form):
-        return self._form_instances[form]
+    def get_form(self, form_class):
+        return self._form_instances[form_class]
+
+    def full_clean(self):
+        self.errors
+
+    def _clean_fields(self):
+        for form in self.forms:
+            for name, field in form.fields.items():
+                try:
+                    value = form.cleaned_data[name]
+                    if hasattr(self, 'clean_%s' % name):
+                        value = getattr(self, 'clean_%s' % name)()
+                        form.cleaned_data[name] = value
+                except forms.ValidationError, e:
+                    form._errors[name] = self.error_class(e.messages)
+                    if name in form.cleaned_data:
+                        del form.cleaned_data[name]
 
     @property
     def errors(self):
         _errors = {}
-        for form in self._form_instances.values():
+        for form in self.forms:
             _errors.update(form.errors)
+
+        if not _errors:
+            self._clean_fields()
+            # This may modify forms' fields so calling _post_clean()
+            for form in self.forms:
+                form._post_clean()
+
         return _errors

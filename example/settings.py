@@ -31,6 +31,9 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'example',
     'django_nose',
     'composite_form',
 )
