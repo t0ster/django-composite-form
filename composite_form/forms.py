@@ -13,10 +13,34 @@ class CompositeForm(forms.Form):
     form_list = None
     _form_instances = {}
 
-    def __init__(self, data=None, files=None, *args, **kwargs):
+    def __init__(self, data=None, files=None, *args, **initkwargs):
+        if "instance" in initkwargs:
+            raise ValueError("use instances instead of instance")
+        instances = initkwargs.pop("instances", None)
+        if instances is not None:
+            if not isinstance(instances, list):
+                raise ValueError("instances should be a list the same lenth as form_list")
+            if len(instances) != len(self.form_list):
+                raise ValueError("instances should be a list the same lenth as form_list")
+        kwargs = initkwargs.copy()
         self.is_bound = data is not None or files is not None
+        self.instances = instances
+
         for form in self.form_list:
+            if self.get_form_instance(form):
+                kwargs.update({"instance": self.get_form_instance(form)})
             self._form_instances[form] = form(data, files, *args, **kwargs)
+
+    def __unicode__(self):
+        raise NotImplementedError("Sorry, not implemented yet")
+
+    def get_form_instance(self, form):
+        """
+        This method only makes sense if form is instance of ModelForm
+        """
+        if self.instances is not None:
+            return self.instances[self.form_list.index(form)]
+        return None
 
     @property
     def forms(self):
