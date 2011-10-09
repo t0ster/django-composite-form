@@ -75,6 +75,13 @@ class CompositeForm(forms.Form):
                         del form.cleaned_data[name]
 
     @property
+    def initial(self):
+        _initial = {}
+        for form in self.forms:
+            _initial.update(form.initial)
+        return _initial
+
+    @property
     def errors(self):
         """
         Returns error dictionary containing all errors from all forms

@@ -48,5 +48,6 @@ class FormsTests(TestCase):
         profile_form = ProfileForm(instances=[user, profile])
         self.assertEqual(profile_form.get_form(UserCreationForm).instance.username, "test_user")
         self.assertEqual(profile_form.get_form(BaseProfileForm).instance.address, "blah")
+        self.assertEqual(profile_form.initial, {'username': u'test_user', 'id': 1, 'address': u'blah'})
         unicode(profile_form.get_form(UserCreationForm))
         unicode(profile_form.get_form(BaseProfileForm))
