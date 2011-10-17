@@ -1,6 +1,7 @@
 *.pyc
 .installed.cfg
 bin
+!/templates/bin
 develop-eggs
 parts
 
