@@ -51,3 +51,13 @@ class FormsTests(TestCase):
         self.assertEqual(profile_form.initial, {'username': u'test_user', 'id': 1, 'address': u'blah'})
         unicode(profile_form.get_form(UserCreationForm))
         unicode(profile_form.get_form(BaseProfileForm))
+
+    def test_cleaned_data(self):
+        profile_form = ProfileForm({
+            "address": "13 Test St",
+            "username": "test_user",
+            "password1": "123456",
+            "password2": "123456",
+        })
+        self.assertTrue(profile_form.is_valid())
+        self.assertTrue(profile_form.cleaned_data)

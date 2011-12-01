@@ -61,6 +61,13 @@ class CompositeForm(forms.Form):
     def full_clean(self):
         self.errors
 
+    @property
+    def cleaned_data(self):
+        cleaned_data = {}
+        for form in self.forms:
+            cleaned_data.update(form.cleaned_data)
+        return cleaned_data
+
     def _clean_fields(self):
         for form in self.forms:
             for name, field in form.fields.items():
