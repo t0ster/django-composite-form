@@ -88,12 +88,18 @@ class CompositeForm(forms.Form):
             _initial.update(form.initial)
         return _initial
 
+    def non_field_errors(self):
+        _errors = forms.util.ErrorList()
+        for form in self.forms:
+            _errors.extend(form.non_field_errors())
+        return _errors
+
     @property
     def errors(self):
         """
         Returns error dictionary containing all errors from all forms
         """
-        _errors = {}
+        _errors = forms.util.ErrorDict()
         for form in self.forms:
             _errors.update(form.errors)
 
