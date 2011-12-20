@@ -22,11 +22,11 @@ class CompositeForm(forms.Form):
                 raise ValueError("instances should be a list the same lenth as form_list")
             if len(instances) != len(self.form_list):
                 raise ValueError("instances should be a list the same lenth as form_list")
-        kwargs = initkwargs.copy()
         self.is_bound = data is not None or files is not None
         self.instances = instances
 
         for form in self.form_list:
+            kwargs = initkwargs.copy()
             if self.get_form_instance(form):
                 kwargs.update({"instance": self.get_form_instance(form)})
             self._form_instances[form] = form(data, files, *args, **kwargs)
@@ -88,12 +88,18 @@ class CompositeForm(forms.Form):
             _initial.update(form.initial)
         return _initial
 
+    def non_field_errors(self):
+        _errors = forms.util.ErrorList()
+        for form in self.forms:
+            _errors.extend(form.non_field_errors())
+        return _errors
+
     @property
     def errors(self):
         """
         Returns error dictionary containing all errors from all forms
         """
-        _errors = {}
+        _errors = forms.util.ErrorDict()
         for form in self.forms:
             _errors.update(form.errors)
 
