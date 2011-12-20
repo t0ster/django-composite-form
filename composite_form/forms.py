@@ -10,8 +10,8 @@ class CompositeForm(forms.Form):
       class ProfileForm(CompositeForm):
           form_list = [ProfileAddressForm, ProfileBirthDayForm]
     """
-    form_list = None
-    _form_instances = {}
+    form_list = None  # Form classes
+    _form_instances = {}  # Form instances
 
     def __init__(self, data=None, files=None, *args, **initkwargs):
         if "instance" in initkwargs:
@@ -22,6 +22,9 @@ class CompositeForm(forms.Form):
                 raise ValueError("instances should be a list the same lenth as form_list")
             if len(instances) != len(self.form_list):
                 raise ValueError("instances should be a list the same lenth as form_list")
+            for instance, form in zip(instances, self.form_list):
+                if instance is not None and not isinstance(instance, form._meta.model):
+                    raise ValueError
         self.is_bound = data is not None or files is not None
         self.instances = instances
 
