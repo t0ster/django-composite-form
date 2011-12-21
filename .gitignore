@@ -4,4 +4,4 @@ bin
 !/templates/bin
 develop-eggs
 parts
-
+dist
