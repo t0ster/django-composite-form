@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 
 
-from example.forms import ProfileForm, BaseProfileForm, UserCreationForm
+from example.forms import ProfileForm, BaseProfileForm, UserCreationForm, AnotherForm
 from example.models import Profile
 
 
@@ -34,3 +34,7 @@ class FormsTests(TestCase):
         profile_form = ProfileForm(instances=[None, self.profile])
         self.assertEqual(profile_form.get_form(BaseProfileForm).instance, self.profile)
         self.assertIsInstance(profile_form.get_form(UserCreationForm).instance, User)
+
+    def test_4(self):
+        another_form = AnotherForm({}, instances=[None, self.user])
+        another_form.is_valid()
